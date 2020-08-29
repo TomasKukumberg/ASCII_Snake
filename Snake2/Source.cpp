@@ -102,7 +102,7 @@ void printEndScreen() {
     system("pause");
 }
 
-void changeSnakeDirection(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
+void changeSnakeDirection(Snake& snake, Coordinates& food) {
     char ch = tolower(_getch() );
     switch (ch) {
     case 'w': 
@@ -284,7 +284,7 @@ bool getInputFromPlayer(char array[][GAME_WIDTH], Snake& snake, Coordinates& foo
     delay(0.85);
     
     if (_kbhit()) {
-        changeSnakeDirection(array, snake, food);
+        changeSnakeDirection(snake, food);
     }
     moveSnake(array,snake, food);
     modifyArray(array, snake, food);
