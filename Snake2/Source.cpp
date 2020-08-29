@@ -159,7 +159,8 @@ void eatFood(Snake& snake, Coordinates& food) {
     snake.coordinates.push_front({ food.x, food.y });
 }
 
-void moveSnakeBody(char array[][GAME_WIDTH], Snake& snake, Coordinates& food, Direction& direction) {
+void moveSnake(char array[][GAME_WIDTH], Snake& snake, Coordinates& food, Direction& direction) {
+    clearScreen();
     switch (direction) {
     case Direction::UP:
         if ((food.x == (snake.coordinates[0].x - 1)) && (food.y == snake.coordinates[0].y)) {
@@ -200,11 +201,6 @@ void moveSnakeBody(char array[][GAME_WIDTH], Snake& snake, Coordinates& food, Di
     }
 }
 
-
-void moveSnake(char array[][GAME_WIDTH], Snake& snake, Coordinates& food, Direction& direction) {
-    clearScreen();
-    moveSnakeBody(array, snake, food, direction); 
-}
 
 void addWalls(char array[][GAME_WIDTH]) {
     for (int i = 0; i < GAME_HEIGHT; i++) {
@@ -315,7 +311,8 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-//REFACTOR MOVESNAKEBODY FUNC AND CHECK MOVESNAKE, MAYBE RENAME THESE TWO FUNCS
+//TODO FIX BUG WITH RIGHT WALL
+//REFACTOR MOVESNAKEBODY FUNC 
 //TODO ADD DIRECTION TO SNAKE STRUCT AND FOOD TOO
 //TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
 //MAYBE TODO: REWORK WHOLE PROGRAM FOR OOP, MAIN CLASS SNAKE
