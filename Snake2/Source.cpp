@@ -283,6 +283,7 @@ bool isEnd(const Snake& snake) {
         return false;
     }
 }
+//test
 
 bool getInputFromPlayer(char array[][GAME_WIDTH], Snake& snake, Coordinates& food){
     delay(0.85);
