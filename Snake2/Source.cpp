@@ -81,7 +81,7 @@ Coordinates calcPotentialMove(const Snake& snake) {
     return potentialMove;
 }
 
-bool crashIntoWall(Coordinates potentialMove) {
+bool crashIntoWall(const Coordinates potentialMove) {
     return potentialMove.x == 0 || potentialMove.x == GAME_HEIGHT - 1 || potentialMove.y == 0
         || potentialMove.y == GAME_WIDTH - 1;
 }
@@ -235,7 +235,7 @@ void fillArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
 }
 
 void addSnakeInArray(char array[][GAME_WIDTH], Snake& snake, int i) {
-    if (i == 0) {
+    if (i == 0) { //adding head
         if (snake.direction == Direction::UP) {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = '^';
         }
@@ -249,7 +249,7 @@ void addSnakeInArray(char array[][GAME_WIDTH], Snake& snake, int i) {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = 'v';
         }
     }
-    else {
+    else { //adding body
         array[snake.coordinates[i].x][snake.coordinates[i].y] = 'o';
     }
 }
@@ -270,7 +270,7 @@ void initArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     modifyArray(array, snake, food);
 }
 
-bool checkIfEnd(Snake& snake) {
+bool isEnd(Snake& snake) {
     if (snake.coordinates[0].x == 0 || snake.coordinates[0].x == GAME_HEIGHT ||
         snake.coordinates[0].y == 0 || snake.coordinates[0].y == GAME_WIDTH) {
         return true;
@@ -289,7 +289,7 @@ bool getInputFromPlayer(char array[][GAME_WIDTH], Snake& snake, Coordinates& foo
     moveSnake(array,snake, food);
     modifyArray(array, snake, food);
     drawArray(array);
-    return checkIfEnd(snake);
+    return isEnd(snake);
 }
 
 void centerConsole(void) {
@@ -317,9 +317,8 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-
+//MAYBE TODO: CHECK IF return checkIfEnd(snake) IS NEEDED
 //REFACTOR MOVESNAKEBODY FUNC 
-//TODO ADD DIRECTION TO SNAKE STRUCT
 //MAYBE TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
 //MAYBE TODO: REWORK WHOLE PROGRAM FOR OOP, MAIN CLASS SNAKE
 //MAYBE TODO: FIX X,Y SWAPPED COORDINATES
@@ -338,7 +337,7 @@ int main() {
     drawArray(array);
     
     while (!gameOver) {
-        gameOver = getInputFromPlayer(array, snake, food);
+       gameOver = getInputFromPlayer(array, snake, food);
     }
     
     
