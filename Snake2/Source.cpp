@@ -32,10 +32,9 @@ void changeFoodPos(Coordinates& food) {
     food.y = rand() % (GAME_WIDTH - 2) + 1;
 }
 
-Coordinates& spawnFood(char array[][GAME_WIDTH]) {
-    Coordinates* food = new Coordinates;
-    changeFoodPos(*food);
-    return *food;
+Coordinates& spawnFood(char array[][GAME_WIDTH], Coordinates& food) {
+    changeFoodPos(food);
+    return food;
 }
 
 void drawArray(char array[][GAME_WIDTH]) {
@@ -225,7 +224,7 @@ void fillArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     snake.coordinates.push_back(head); //save init coord of snakes head
     setCharOnPosition(array, body, 'o'); //set snakes init body pos
     snake.coordinates.push_back(body); //save init coord of snakes body 
-    food = spawnFood(array);
+    spawnFood(array, food);
 }
 
 void addSnakeInArray(char array[][GAME_WIDTH], Snake& snake, Direction& direction, int i) {
@@ -311,7 +310,8 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-//TODO FIX BUG WITH RIGHT WALL
+//TODO CHANGE SPAWNFOOD FUNC SO ITS NOT ALLOCATING MEMORY
+//TODO FIX BUG WITH SNAKE MOVING IN WALLS
 //REFACTOR MOVESNAKEBODY FUNC 
 //TODO ADD DIRECTION TO SNAKE STRUCT AND FOOD TOO
 //TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
