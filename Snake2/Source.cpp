@@ -165,47 +165,44 @@ void eatFood(Snake& snake, Coordinates& food) {
     snake.coordinates.push_front({ food.x, food.y });
 }
 
+//HERE FIX MAGIC COMPARISONS
+
 void moveSnake(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
+    bool foodX, foodY; //bools if snakes head is facing the food and is exactly 1 distance away 
     clearScreen();
     switch (snake.direction) {
-    case Direction::UP:
-        if ((food.x == (snake.coordinates[0].x - 1)) && (food.y == snake.coordinates[0].y)) {
-            eatFood(snake, food);
-            changeFoodPos(food);
+        case Direction::UP: {
+            foodX = food.x == snake.coordinates[0].x - 1;
+            foodY = food.y == snake.coordinates[0].y;
+            break;
         }
-        else {
-            shiftBody(array, snake, food);
+        case Direction::DOWN: {
+            foodX = food.x == snake.coordinates[0].x + 1;
+            foodY = food.y == snake.coordinates[0].y;
+            break;
         }
-        break;
-    case Direction::DOWN:
-        if ((food.x == (snake.coordinates[0].x + 1)) && (food.y == snake.coordinates[0].y)) {
-            eatFood(snake, food);
-            changeFoodPos(food);
+        case Direction::LEFT: {
+            foodX = food.x == snake.coordinates[0].x;
+            foodY = food.y == snake.coordinates[0].y - 1;
+            break;
         }
-        else {
-            shiftBody(array, snake, food);
+        case Direction::RIGHT: {
+            foodX = food.x == snake.coordinates[0].x;
+            foodY = food.y == snake.coordinates[0].y + 1;
+            break;
         }
-        break;
-    case Direction::LEFT:
-        if ((food.x == (snake.coordinates[0].x)) && (food.y == snake.coordinates[0].y - 1)) {
-            eatFood(snake, food);
-            changeFoodPos(food);
-        }
-        else {
-            shiftBody(array, snake, food);
-        }
-        break;
-    case Direction::RIGHT:
-        if ((food.x == (snake.coordinates[0].x)) && (food.y == snake.coordinates[0].y + 1)) {
-            eatFood(snake, food);
-            changeFoodPos(food);
-        }
-        else {
-            shiftBody(array, snake, food);
-        }
-        break;
+    }
+
+    if (foodX && foodY) {
+        eatFood(snake, food);
+        changeFoodPos(food);
+    }
+    else {
+        shiftBody(array, snake, food);
     }
 }
+
+
 
 
 void addWalls(char array[][GAME_WIDTH]) {
@@ -223,8 +220,11 @@ void addWalls(char array[][GAME_WIDTH]) {
 
 void fillArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     
-    Coordinates head = { GAME_HEIGHT / 2, GAME_WIDTH / 2 };
-    Coordinates body = { GAME_HEIGHT / 2, (GAME_WIDTH / 2) + 1 };
+    int xCenter = GAME_WIDTH / 2;
+    int yCenter = GAME_HEIGHT / 2;
+    
+    Coordinates head = { yCenter, xCenter };
+    Coordinates body = { yCenter, xCenter + 1 };
     
     addWalls(array);
     setCharOnPosition(array, head, '<'); //set snakes init head pos
@@ -270,9 +270,13 @@ void initArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     modifyArray(array, snake, food);
 }
 
-bool isEnd(Snake& snake) {
-    if (snake.coordinates[0].x == 0 || snake.coordinates[0].x == GAME_HEIGHT ||
-        snake.coordinates[0].y == 0 || snake.coordinates[0].y == GAME_WIDTH) {
+bool isEnd(const Snake& snake) {
+    bool inLeftWall = snake.coordinates[0].y == 0;
+    bool inRightWall = snake.coordinates[0].y == GAME_WIDTH;
+    bool inUpperWall = snake.coordinates[0].x == 0;
+    bool inBottomWall = snake.coordinates[0].x == GAME_HEIGHT;
+    
+    if (inLeftWall || inRightWall || inUpperWall || inBottomWall) {
         return true;
     }
     else {
@@ -317,10 +321,6 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-//MAYBE TODO: CHECK IF return checkIfEnd(snake) IS NEEDED
-//REFACTOR MOVESNAKEBODY FUNC 
-//MAYBE TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
-//MAYBE TODO: REWORK WHOLE PROGRAM FOR OOP, MAIN CLASS SNAKE
 //MAYBE TODO: FIX X,Y SWAPPED COORDINATES
 
 int main() {
