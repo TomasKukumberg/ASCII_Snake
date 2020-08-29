@@ -80,10 +80,16 @@ Coordinates calcPotentialMove(const Snake& snake, Direction& direction) {
     return potentialMove;
 }
 
+bool crashIntoWall(Coordinates potentialMove) {
+    return potentialMove.x == 0 || potentialMove.x == GAME_HEIGHT - 1 || potentialMove.y == 0
+        || potentialMove.y == GAME_WIDTH - 1;
+}
+
 bool legalMove(const Snake& snake, Direction& direction) {
-    Coordinates potentialMove = calcPotentialMove(snake, direction);
+    Coordinates potentialMove = calcPotentialMove(snake, direction); 
     for (size_t i = 0; i < snake.coordinates.size(); i++) {
-        if (snake.coordinates[i].x == potentialMove.x && snake.coordinates[i].y == potentialMove.y) {
+        bool crashIntoBody = snake.coordinates[i].x == potentialMove.x && snake.coordinates[i].y == potentialMove.y;
+        if (crashIntoBody || crashIntoWall(potentialMove) ) {
             return false;
         }
     }
@@ -310,8 +316,7 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-//TODO CHANGE SPAWNFOOD FUNC SO ITS NOT ALLOCATING MEMORY
-//TODO FIX BUG WITH SNAKE MOVING IN WALLS
+
 //REFACTOR MOVESNAKEBODY FUNC 
 //TODO ADD DIRECTION TO SNAKE STRUCT AND FOOD TOO
 //TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
