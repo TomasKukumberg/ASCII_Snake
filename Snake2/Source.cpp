@@ -1,8 +1,6 @@
 #include <iostream>
-#include <stdlib.h>
 #include <windows.h>
 #include <conio.h>
-#include <cstdlib>
 #include <ctime>
 #include <deque>
 
@@ -318,9 +316,9 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-//TODO RELEASE MEMORY IF FOOD IS EATEN
+
 //MAYBE TODO: REWORK WHOLE PROGRAM FOR OOP, MAIN CLASS SNAKE
-//TODO MAYBE: FIX X,Y SWAPPED COORDINATES
+//MAYBE TODO: FIX X,Y SWAPPED COORDINATES
 
 int main() {
     
@@ -338,6 +336,7 @@ int main() {
     while (!gameOver) {
         gameOver = getInputFromPlayer(array, snake, food, direction);
     }
+    
     
     printEndScreen();
 }
