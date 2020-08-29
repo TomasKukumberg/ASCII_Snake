@@ -98,7 +98,6 @@ void printEndScreen() {
 
 void changeSnakeDirection(char array[][GAME_WIDTH], Snake& snake, Coordinates& food, Direction& direction) {
     char ch = tolower(_getch() );
-    //here call legalMove and determine next step
     switch (ch) {
     case 'w': 
         if (direction != Direction::DOWN) {
@@ -316,7 +315,7 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-
+//TODO: REMOVE CHAR ARRAY AND JUST PRINT STUFF ACCORDING TO POSITIONS
 //MAYBE TODO: REWORK WHOLE PROGRAM FOR OOP, MAIN CLASS SNAKE
 //MAYBE TODO: FIX X,Y SWAPPED COORDINATES
 
