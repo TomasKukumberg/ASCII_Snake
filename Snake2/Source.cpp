@@ -82,8 +82,8 @@ Coordinates calcPotentialMove(const Snake& snake) {
 }
 
 bool crashIntoWall(const Coordinates potentialMove) {
-    return potentialMove.x == 0 || potentialMove.x == GAME_HEIGHT - 1 || potentialMove.y == 0
-        || potentialMove.y == GAME_WIDTH - 1;
+    return potentialMove.x == 0 || potentialMove.x == GAME_HEIGHT - 1 || potentialMove.y == 0 || 
+           potentialMove.y == GAME_WIDTH - 1;
 }
 
 bool legalMove(const Snake& snake) {
@@ -196,8 +196,7 @@ void moveSnake(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     if (foodX && foodY) {
         eatFood(snake, food);
         changeFoodPos(food);
-    }
-    else {
+    } else {
         shiftBody(array, snake, food);
     }
 }
@@ -210,8 +209,7 @@ void addWalls(char array[][GAME_WIDTH]) {
         for (int j = 0; j < GAME_WIDTH; j++) {
             if (j == 0 || j == GAME_WIDTH - 1 || i == 0 || i == GAME_HEIGHT - 1) {
                 array[i][j] = 'X';
-            }
-            else {
+            } else {
                 array[i][j] = ' ';
             }
         }
@@ -238,18 +236,14 @@ void addSnakeInArray(char array[][GAME_WIDTH], Snake& snake, int i) {
     if (i == 0) { //adding head
         if (snake.direction == Direction::UP) {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = '^';
-        }
-        else if (snake.direction == Direction::LEFT) {
+        } else if (snake.direction == Direction::LEFT) {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = '<';
-        }
-        else if (snake.direction == Direction::RIGHT) {
+        } else if (snake.direction == Direction::RIGHT) {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = '>';
-        }
-        else {
+        } else {
             array[snake.coordinates[i].x][snake.coordinates[i].y] = 'v';
         }
-    }
-    else { //adding body
+    } else { //adding body
         array[snake.coordinates[i].x][snake.coordinates[i].y] = 'o';
     }
 }
@@ -278,8 +272,7 @@ bool isEnd(const Snake& snake) {
     
     if (inLeftWall || inRightWall || inUpperWall || inBottomWall) {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
@@ -340,7 +333,6 @@ int main() {
     while (!gameOver) {
        gameOver = getInputFromPlayer(array, snake, food);
     }
-    
     
     printEndScreen();
 }
