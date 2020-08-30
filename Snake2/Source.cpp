@@ -20,22 +20,17 @@ enum class Direction {
 };
 
 typedef struct Snake {
-    std::deque<Coordinates> coordinates;
-    Direction direction;
+    std::deque<Coordinates> body;
+    Direction direction = Direction::LEFT;
 } Snake;
 
 void setCharOnPosition(char array[][GAME_WIDTH], const Coordinates& coord, char c) {
     array[coord.x][coord.y] = c;
 }
 
-void changeFoodPos(Coordinates& food) {
+void generateNewFood(Coordinates& food) {
     food.x = rand() % (GAME_HEIGHT - 2) + 1;
     food.y = rand() % (GAME_WIDTH - 2) + 1;
-}
-
-Coordinates& spawnFood(char array[][GAME_WIDTH], Coordinates& food) {
-    changeFoodPos(food);
-    return food;
 }
 
 void drawArray(char array[][GAME_WIDTH]) {
@@ -57,40 +52,40 @@ void clearScreen() {
 }
 
 bool headEqualsFood(const Snake& snake, const Coordinates& food) {
-    return (snake.coordinates[0].x == food.x) && (snake.coordinates[0].y == food.y);
+    return (snake.body[0].x == food.x) && (snake.body[0].y == food.y);
 }
 
-Coordinates calcPotentialMove(const Snake& snake) {
-    Coordinates potentialMove;
+Coordinates calcNextMove(const Snake& snake) {
+    Coordinates nextMove;
     switch (snake.direction) {
     case Direction::DOWN:
-        potentialMove = { snake.coordinates[0].x + 1, snake.coordinates[0].y };
+        nextMove = { snake.body[0].x + 1, snake.body[0].y };
         break;
     case Direction::UP:
-        potentialMove = { snake.coordinates[0].x - 1, snake.coordinates[0].y };
+        nextMove = { snake.body[0].x - 1, snake.body[0].y };
         break;
     case Direction::LEFT:
-        potentialMove = { snake.coordinates[0].x, snake.coordinates[0].y - 1 };
+        nextMove = { snake.body[0].x, snake.body[0].y - 1 };
         break;
     case Direction::RIGHT:
-        potentialMove = { snake.coordinates[0].x, snake.coordinates[0].y + 1 };
+        nextMove = { snake.body[0].x, snake.body[0].y + 1 };
         break;
     default:
         break;
     }
-    return potentialMove;
+    return nextMove;
 }
 
-bool crashIntoWall(const Coordinates potentialMove) {
-    return potentialMove.x == 0 || potentialMove.x == GAME_HEIGHT - 1 || potentialMove.y == 0 || 
-           potentialMove.y == GAME_WIDTH - 1;
+bool crashIntoWall(const Coordinates nextMove) {
+    return nextMove.x == 0 || nextMove.x == GAME_HEIGHT - 1 || nextMove.y == 0 ||
+           nextMove.y == GAME_WIDTH - 1;
 }
 
 bool legalMove(const Snake& snake) {
-    Coordinates potentialMove = calcPotentialMove(snake); 
-    for (size_t i = 0; i < snake.coordinates.size(); i++) {
-        bool crashIntoBody = snake.coordinates[i].x == potentialMove.x && snake.coordinates[i].y == potentialMove.y;
-        if (crashIntoBody || crashIntoWall(potentialMove) ) {
+    Coordinates nextMove = calcNextMove(snake); 
+    for (size_t i = 0; i < snake.body.size(); i++) {
+        bool crashIntoBody = snake.body[i].x == nextMove.x && snake.body[i].y == nextMove.y;
+        if (crashIntoBody || crashIntoWall(nextMove) ) {
             return false;
         }
     }
@@ -137,72 +132,67 @@ void changeSnakeDirection(Snake& snake, Coordinates& food) {
 void shiftHead(Snake& snake) {
     switch (snake.direction) {
     case Direction::UP:
-        snake.coordinates[0].x = snake.coordinates[0].x - 1;
+        snake.body[0].x = snake.body[0].x - 1;
         break;
     case Direction::DOWN:
-        snake.coordinates[0].x = snake.coordinates[0].x + 1;
+        snake.body[0].x = snake.body[0].x + 1;
         break;
     case Direction::LEFT:
-        snake.coordinates[0].y = snake.coordinates[0].y - 1;
+        snake.body[0].y = snake.body[0].y - 1;
         break;
     case Direction::RIGHT:
-        snake.coordinates[0].y = snake.coordinates[0].y + 1;
+        snake.body[0].y = snake.body[0].y + 1;
         break;
     }
 }
 
-
 void shiftBody(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
-    std::deque<Coordinates> coordinates2(snake.coordinates);
+    std::deque<Coordinates> coordinates2(snake.body);
 
-    for (size_t i = 1; i < snake.coordinates.size(); ++i) { //shift array to the right starting from index 1
-        snake.coordinates[i] = coordinates2[i - 1];
+    for (size_t i = 1; i < snake.body.size(); ++i) { //shift array to the right starting from index 1
+        snake.body[i] = coordinates2[i - 1];
     }
     shiftHead(snake);  
 }
 
 void eatFood(Snake& snake, Coordinates& food) {
-    snake.coordinates.push_front({ food.x, food.y });
+    snake.body.push_front({ food.x, food.y });
 }
 
 //HERE FIX MAGIC COMPARISONS
-
 void moveSnake(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     bool foodX, foodY; //bools if snakes head is facing the food and is exactly 1 distance away 
     clearScreen();
     switch (snake.direction) {
         case Direction::UP: {
-            foodX = food.x == snake.coordinates[0].x - 1;
-            foodY = food.y == snake.coordinates[0].y;
+            foodX = food.x == snake.body[0].x - 1;
+            foodY = food.y == snake.body[0].y;
             break;
         }
         case Direction::DOWN: {
-            foodX = food.x == snake.coordinates[0].x + 1;
-            foodY = food.y == snake.coordinates[0].y;
+            foodX = food.x == snake.body[0].x + 1;
+            foodY = food.y == snake.body[0].y;
             break;
         }
         case Direction::LEFT: {
-            foodX = food.x == snake.coordinates[0].x;
-            foodY = food.y == snake.coordinates[0].y - 1;
+            foodX = food.x == snake.body[0].x;
+            foodY = food.y == snake.body[0].y - 1;
             break;
         }
         case Direction::RIGHT: {
-            foodX = food.x == snake.coordinates[0].x;
-            foodY = food.y == snake.coordinates[0].y + 1;
+            foodX = food.x == snake.body[0].x;
+            foodY = food.y == snake.body[0].y + 1;
             break;
         }
     }
 
     if (foodX && foodY) {
         eatFood(snake, food);
-        changeFoodPos(food);
+        generateNewFood(food);
     } else {
         shiftBody(array, snake, food);
     }
 }
-
-
-
 
 void addWalls(char array[][GAME_WIDTH]) {
     for (int i = 0; i < GAME_HEIGHT; i++) {
@@ -225,26 +215,26 @@ void fillArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
     Coordinates body = { yCenter, xCenter + 1 };
     
     addWalls(array);
-    setCharOnPosition(array, head, '<'); //set snakes init head pos
-    snake.coordinates.push_back(head); //save init coord of snakes head
-    setCharOnPosition(array, body, 'o'); //set snakes init body pos
-    snake.coordinates.push_back(body); //save init coord of snakes body 
-    spawnFood(array, food);
+    setCharOnPosition(array, head, '<');
+    snake.body.push_back(head); 
+    setCharOnPosition(array, body, 'o'); 
+    snake.body.push_back(body); 
+    generateNewFood(food);
 }
 
 void addSnakeInArray(char array[][GAME_WIDTH], Snake& snake, int i) {
     if (i == 0) { //adding head
         if (snake.direction == Direction::UP) {
-            array[snake.coordinates[i].x][snake.coordinates[i].y] = '^';
+            array[snake.body[i].x][snake.body[i].y] = '^';
         } else if (snake.direction == Direction::LEFT) {
-            array[snake.coordinates[i].x][snake.coordinates[i].y] = '<';
+            array[snake.body[i].x][snake.body[i].y] = '<';
         } else if (snake.direction == Direction::RIGHT) {
-            array[snake.coordinates[i].x][snake.coordinates[i].y] = '>';
+            array[snake.body[i].x][snake.body[i].y] = '>';
         } else {
-            array[snake.coordinates[i].x][snake.coordinates[i].y] = 'v';
+            array[snake.body[i].x][snake.body[i].y] = 'v';
         }
     } else { //adding body
-        array[snake.coordinates[i].x][snake.coordinates[i].y] = 'o';
+        array[snake.body[i].x][snake.body[i].y] = 'o';
     }
 }
 
@@ -252,7 +242,7 @@ void modifyArray(char array[][GAME_WIDTH], Snake& snake, const Coordinates& food
 
     addWalls(array);
     
-    for (size_t i = 0; i < snake.coordinates.size(); i++) {
+    for (size_t i = 0; i < snake.body.size(); i++) {
         addSnakeInArray(array, snake, i);
     }
 
@@ -265,10 +255,10 @@ void initArray(char array[][GAME_WIDTH], Snake& snake, Coordinates& food) {
 }
 
 bool isEnd(const Snake& snake) {
-    bool inLeftWall = snake.coordinates[0].y == 0;
-    bool inRightWall = snake.coordinates[0].y == GAME_WIDTH;
-    bool inUpperWall = snake.coordinates[0].x == 0;
-    bool inBottomWall = snake.coordinates[0].x == GAME_HEIGHT;
+    bool inLeftWall = snake.body[0].y == 0;
+    bool inRightWall = snake.body[0].y == GAME_WIDTH;
+    bool inUpperWall = snake.body[0].x == 0;
+    bool inBottomWall = snake.body[0].x == GAME_HEIGHT;
     
     if (inLeftWall || inRightWall || inUpperWall || inBottomWall) {
         return true;
@@ -322,7 +312,6 @@ int main() {
     char array[GAME_HEIGHT][GAME_WIDTH];
     Snake snake;
     Coordinates food;
-    snake.direction = Direction::LEFT;
     bool gameOver = false;
 
     srand((unsigned int)time(NULL));
@@ -333,6 +322,5 @@ int main() {
     while (!gameOver) {
        gameOver = getInputFromPlayer(array, snake, food);
     }
-    
     printEndScreen();
 }
