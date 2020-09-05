@@ -270,11 +270,6 @@ void drawArray(Food& food) {
     std::cout << "*";
 }
 
-void delay(double seconds) {
-    DWORD milliseconds = (DWORD)seconds * 1000;
-    Sleep(milliseconds);
-}
-
 //TODO FIX SPACING
 int main() {
     
