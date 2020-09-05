@@ -6,13 +6,14 @@
 #include <chrono>
 #include <thread>
 
+//#define GAME_HEIGHT 31
+//#define GAME_WIDTH 51
 #define GAME_HEIGHT 31
-#define GAME_WIDTH 51
+#define GAME_WIDTH 90
 #define LEFT_WALL 0
 #define RIGHT_WALL 51
 #define BOTTOM_WALL 31
 #define UPPER_WALL 0
-
 
 enum class Direction {
     LEFT,
@@ -28,15 +29,6 @@ void setCursorPosition(int x, int y)
     COORD coord = { (SHORT)x, (SHORT)y };
     SetConsoleCursorPosition(hOut, coord);
 }
-
-class Food{
-private:
-    COORD coord;
-public:
-    COORD getCoord(void) {
-        return this->coord;
-    }
-};
 
 class Position {
 private:
@@ -54,11 +46,33 @@ public:
     int getX() {
         return this->x;
     }
+    void setX(int x) {
+        this->x = x;
+    }
     int getY() {
         return this->y;
     }
+    void setY(int y) {
+        this->y = y;
+    }
     bool operator == (const Position& other) const {
         return this->x == other.x && this->y == other.y;
+    }
+};
+
+class Food {
+private:
+    Position position;
+public:
+    Food() {
+        generateNewFood();
+    }
+    Position getPosition(void) {
+        return this->position;
+    }
+    void generateNewFood() {
+        position.setX(rand() % (GAME_HEIGHT - 2) + 1);
+        position.setY(rand() % (GAME_WIDTH - 2) + 1);
     }
 };
 
@@ -187,19 +201,6 @@ public:
     }
 };
 
-/*
-bool getInputFromPlayer(char array[][GAME_WIDTH], Snake& snake, Coordinates& food){
-    delay(0.85);
-    
-    if (_kbhit()) {
-        changeSnakeDirection(snake, food);
-    }
-    moveSnake(array,snake, food);
-    //modifyArray(array, snake, food);
-    drawArray(array, snake, food);
-    return isEnd(snake);
-}*/
-
 void centerConsole(void) {
     HWND console = GetConsoleWindow();
     RECT r;
@@ -244,11 +245,13 @@ void delay(double seconds) {
     Sleep(milliseconds);
 }
 
+//TODO ADD EATING FOOD
+
 int main() {
     //auto t = std::chrono::system_clock::now();
-
     initConsole(false);
     Snake snake;
+    Food food;
     drawArray();
     while (true) {
         delay(1);
@@ -259,6 +262,8 @@ int main() {
             snake.move();
             snake.redraw();
         } else {
+            setCursorPosition(0, GAME_HEIGHT);
+            ShowConsoleCursor(true);
             std::cout << "GAME OVER!\n";
             std::exit(EXIT_FAILURE);
         }
