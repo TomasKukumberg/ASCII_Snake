@@ -1,19 +1,16 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
-#include <ctime>
 #include <deque>
 #include <chrono>
 #include <thread>
 
-//#define GAME_HEIGHT 31
-//#define GAME_WIDTH 51
-#define GAME_HEIGHT 31
 #define GAME_WIDTH 90
+#define GAME_HEIGHT 31
 #define LEFT_WALL 0
-#define RIGHT_WALL 51
-#define BOTTOM_WALL 31
+#define RIGHT_WALL GAME_WIDTH
 #define UPPER_WALL 0
+#define BOTTOM_WALL GAME_HEIGHT
 
 enum class Direction {
     LEFT,
@@ -71,8 +68,8 @@ public:
         return this->position;
     }
     void generateNewFood() {
-        position.setX(rand() % (GAME_HEIGHT - 2) + 1);
-        position.setY(rand() % (GAME_WIDTH - 2) + 1);
+        position.setX(rand() % (GAME_WIDTH - 2) + 1);
+        position.setY(rand() % (GAME_HEIGHT - 2) + 1);
     }
 };
 
@@ -103,8 +100,8 @@ public:
         }
     }
     bool crashIntoWalls(Position nextMove) {
-        return (nextMove.getX() == LEFT_WALL) || (nextMove.getX() == RIGHT_WALL) || (nextMove.getY() == BOTTOM_WALL) ||
-            (nextMove.getY() == UPPER_WALL);
+        return (nextMove.getX() == LEFT_WALL) || (nextMove.getX() == RIGHT_WALL) ||
+               (nextMove.getY() == BOTTOM_WALL) || (nextMove.getY() == UPPER_WALL);
     }
     Position getNextMove() {
         Position nextMove;
@@ -130,24 +127,30 @@ public:
         if (eatItself(nextMove)) return false;
         return true;
     }
-    void move() {
-        setCursorPosition(body.back().getX(), body.back().getY());  
-        std::cout << "  ";  //delete tail in console and then data
-        body.pop_back();
-        switch (direction) {
-        case Direction::LEFT:
-            body.push_front({ body[0].getX() - 1, body[0].getY() });
-            break;
-        case Direction::RIGHT:
-            body.push_front({body[0].getX() + 1, body[0].getY()});
-            break;
-        case Direction::UP:
-            body.push_front({ body[0].getX(), body[0].getY() - 1 });
-            break;
-        case Direction::DOWN:
-            body.push_front({ body[0].getX(), body[0].getY() + 1 });
-            break;
+    void move(Food& food) {
+        if (!foodNearby(food)) {
+            setCursorPosition(body.back().getX(), body.back().getY());
+            std::cout << "  ";  //delete tail in console
+            body.pop_back();    //delete tail data
+        } else {
+            setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+            switch (direction) {
+            case Direction::LEFT:
+                std::cout << "<";
+                break;
+            case Direction::RIGHT:
+                std::cout << ">";
+                break;
+            case Direction::UP:
+                std::cout << "^";
+                break;
+            case Direction::DOWN:
+                std::cout << "v";
+                break;
+            }
+            food.generateNewFood();
         }
+        body.push_front(getNextMove()); //add head data
     }
     void changeDirection() {
         char ch = tolower(_getch());
@@ -176,7 +179,31 @@ public:
             break;
         }
     }
-    void redraw() {
+    bool foodNearby(Food& food) {
+        switch (direction) {
+        case Direction::LEFT:
+            if (body[0].getX() - 1 == food.getPosition().getX() && body[0].getY() == food.getPosition().getY()) {
+                return true;
+            } 
+            return false;
+        case Direction::RIGHT:
+            if (body[0].getX() + 1 == food.getPosition().getX() && body[0].getY() == food.getPosition().getY()) {
+                return true;
+            }
+            return false;
+        case Direction::UP:
+            if (body[0].getY() - 1 == food.getPosition().getY() && body[0].getX() == food.getPosition().getX()) {
+                return true;
+            }
+            return false;
+        case Direction::DOWN:
+            if (body[0].getY() + 1 == food.getPosition().getY() && body[0].getX() == food.getPosition().getX()) {
+                return true;
+            }
+            return false;
+        }
+    }
+    void redraw(Food& food) {
         for (int i = 0; i < body.size(); i++) {
             setCursorPosition(body[i].getX(), body[i].getY());
             if (i == 0) {
@@ -198,6 +225,8 @@ public:
                 std::cout << "o";
             }
         }
+        setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+        std::cout << "*";
     }
 };
 
@@ -207,13 +236,12 @@ void centerConsole(void) {
     GetWindowRect(console, &r); //stores the console's current dimensions
 
     MoveWindow(console, GetSystemMetrics(SM_CXSCREEN) / 2 - 800 / 2,
-        GetSystemMetrics(SM_CYSCREEN) / 2 - 550 / 2, 800, 550, TRUE); // 800 width, 550 height
+               GetSystemMetrics(SM_CYSCREEN) / 2 - 550 / 2, 800, 550, TRUE); // 800 width, 550 height
 }
 
 void ShowConsoleCursor(bool showFlag)
 {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-
     CONSOLE_CURSOR_INFO cursorInfo;
 
     GetConsoleCursorInfo(out, &cursorInfo);
@@ -227,7 +255,7 @@ void initConsole(bool cursorState) {
     ShowConsoleCursor(cursorState);
 }
 
-void drawArray() {
+void drawArray(Food& food) {
     for (int i = 0; i < GAME_HEIGHT; i++) {
         for (int j = 0; j < GAME_WIDTH; j++) {
             if (i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1) {
@@ -238,6 +266,8 @@ void drawArray() {
         }
         std::cout << "\n";
     }
+    setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+    std::cout << "*";
 }
 
 void delay(double seconds) {
@@ -245,29 +275,31 @@ void delay(double seconds) {
     Sleep(milliseconds);
 }
 
-//TODO ADD EATING FOOD
-
+//TODO FIX SPACING
 int main() {
-    //auto t = std::chrono::system_clock::now();
+    
+    using clock = std::chrono::steady_clock; 
+    auto next_frame = clock::now(); 
+
     initConsole(false);
     Snake snake;
     Food food;
-    drawArray();
+    drawArray(food);
+    
     while (true) {
-        delay(1);
+        next_frame += std::chrono::milliseconds(1000 / 5); // 5Hz 
         if (_kbhit()) {
             snake.changeDirection();
         }
         if (snake.canMove()) {
-            snake.move();
-            snake.redraw();
+            snake.move(food);
+            snake.redraw(food);
         } else {
             setCursorPosition(0, GAME_HEIGHT);
             ShowConsoleCursor(true);
             std::cout << "GAME OVER!\n";
             std::exit(EXIT_FAILURE);
         }
-        //t += std::chrono::milliseconds(33);
-        //std::this_thread::sleep_until(t);
+        std::this_thread::sleep_until(next_frame);
     }
 }
