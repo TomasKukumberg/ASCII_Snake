@@ -64,8 +64,14 @@ public:
     Food() {
         generateNewFood();
     }
-    Position getPosition(void) {
-        return this->position;
+    //Position getPosition(void) {
+      //  return this->position;
+    //}
+    int getX() {
+        return this->position.getX();
+    }
+    int getY() {
+        return this->position.getY();
     }
     void generateNewFood() {
         position.setX(rand() % (GAME_WIDTH - 2) + 1);
@@ -133,7 +139,7 @@ public:
             std::cout << "  ";  //delete tail in console
             body.pop_back();    //delete tail data
         } else {
-            setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+            setCursorPosition(food.getX(), food.getY());
             switch (direction) {
             case Direction::LEFT:
                 std::cout << "<";
@@ -182,22 +188,22 @@ public:
     bool foodNearby(Food& food) {
         switch (direction) {
         case Direction::LEFT:
-            if (body[0].getX() - 1 == food.getPosition().getX() && body[0].getY() == food.getPosition().getY()) {
+            if (body[0].getX() - 1 == food.getX() && body[0].getY() == food.getY()) {
                 return true;
             } 
             return false;
         case Direction::RIGHT:
-            if (body[0].getX() + 1 == food.getPosition().getX() && body[0].getY() == food.getPosition().getY()) {
+            if (body[0].getX() + 1 == food.getX() && body[0].getY() == food.getY()) {
                 return true;
             }
             return false;
         case Direction::UP:
-            if (body[0].getY() - 1 == food.getPosition().getY() && body[0].getX() == food.getPosition().getX()) {
+            if (body[0].getY() - 1 == food.getY() && body[0].getX() == food.getX()) {
                 return true;
             }
             return false;
         case Direction::DOWN:
-            if (body[0].getY() + 1 == food.getPosition().getY() && body[0].getX() == food.getPosition().getX()) {
+            if (body[0].getY() + 1 == food.getY() && body[0].getX() == food.getX()) {
                 return true;
             }
             return false;
@@ -225,7 +231,7 @@ public:
                 std::cout << "o";
             }
         }
-        setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+        setCursorPosition(food.getX(), food.getY());
         std::cout << "*";
     }
 };
@@ -266,7 +272,7 @@ void drawArray(Food& food) {
         }
         std::cout << "\n";
     }
-    setCursorPosition(food.getPosition().getX(), food.getPosition().getY());
+    setCursorPosition(food.getX(), food.getY());
     std::cout << "*";
 }
 
