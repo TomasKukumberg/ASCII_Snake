@@ -255,10 +255,10 @@ void ShowConsoleCursor(bool showFlag)
     SetConsoleCursorInfo(out, &cursorInfo);
 }
 
-void initConsole(bool cursorState) {
+void initConsole(bool cursorFlag) {
     system("cls");
     centerConsole();
-    ShowConsoleCursor(cursorState);
+    ShowConsoleCursor(cursorFlag);
 }
 
 void drawArray(Food& food) {
