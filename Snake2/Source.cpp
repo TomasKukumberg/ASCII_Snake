@@ -8,9 +8,9 @@
 #define GAME_WIDTH 90
 #define GAME_HEIGHT 31
 #define LEFT_WALL 0
-#define RIGHT_WALL GAME_WIDTH
+#define RIGHT_WALL (GAME_WIDTH - 1)
 #define UPPER_WALL 0
-#define BOTTOM_WALL GAME_HEIGHT
+#define BOTTOM_WALL (GAME_HEIGHT - 1)
 
 enum class Direction {
     LEFT,
@@ -273,31 +273,37 @@ void drawArray(Food& food) {
     std::cout << "*";
 }
 
+void endGame() {
+    setCursorPosition(0, GAME_HEIGHT);
+    ShowConsoleCursor(true);
+    std::cout << "GAME OVER!\n";
+    std::exit(EXIT_FAILURE);
+}
+
 //TODO FIX SPACING
 int main() {
     
     using clock = std::chrono::steady_clock; 
-    auto next_frame = clock::now(); 
+    auto next_frame = clock::now();
+    bool gameOver = false;
 
     initConsole(false);
     Snake snake;
     Food food;
     drawArray(food);
     
-    while (true) {
+    while (!gameOver) {
         next_frame += std::chrono::milliseconds(1000 / 5); // 5Hz 
         if (_kbhit()) {
             snake.changeDirection();
         }
-        if (snake.canMove()) {
-            snake.move(food);
-            snake.redraw(food);
-        } else {
-            setCursorPosition(0, GAME_HEIGHT);
-            ShowConsoleCursor(true);
-            std::cout << "GAME OVER!\n";
-            std::exit(EXIT_FAILURE);
+        if (snake.canMove() == false) {
+            gameOver = true;
         }
+        snake.move(food);
+        snake.redraw(food);
         std::this_thread::sleep_until(next_frame);
     }
+    
+    endGame();
 }
