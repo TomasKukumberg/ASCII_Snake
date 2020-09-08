@@ -5,7 +5,7 @@
 #include <chrono>
 #include <thread>
 
-#define GAME_WIDTH 90
+#define GAME_WIDTH 89
 #define GAME_HEIGHT 31
 #define LEFT_WALL 0
 #define RIGHT_WALL (GAME_WIDTH - 1)
@@ -71,7 +71,7 @@ public:
         return this->position.getY();
     }
     void generateNewFood() {
-        position.setX(rand() % (GAME_WIDTH - 2) + 1);
+        position.setX(rand() % (GAME_WIDTH/2) * 2);
         position.setY(rand() % (GAME_HEIGHT - 2) + 1);
     }
 };
@@ -83,7 +83,7 @@ private:
 public:
     Snake() {
         body.push_front({ GAME_WIDTH / 2, GAME_HEIGHT / 2 });
-        body.push_back({ GAME_WIDTH / 2 + 1, GAME_HEIGHT / 2 });
+        body.push_back({ GAME_WIDTH / 2 + 2, GAME_HEIGHT / 2 });
     }
     Direction getDirection() {
         return this->direction;
@@ -116,10 +116,10 @@ public:
             nextMove = { body[0].getX(), body[0].getY() - 1 };
             break;
         case Direction::LEFT:
-            nextMove = { body[0].getX() - 1, body[0].getY() };
+            nextMove = { body[0].getX() - 2, body[0].getY() };
             break;
         case Direction::RIGHT:
-            nextMove = { body[0].getX() + 1, body[0].getY() };
+            nextMove = { body[0].getX() + 2, body[0].getY() };
             break;
         }
         return nextMove;
@@ -185,12 +185,12 @@ public:
     bool foodNearby(Food& food) {
         switch (direction) {
         case Direction::LEFT:
-            if (body[0].getX() - 1 == food.getX() && body[0].getY() == food.getY()) {
+            if (body[0].getX() - 2 == food.getX() && body[0].getY() == food.getY()) {
                 return true;
             } 
             return false;
         case Direction::RIGHT:
-            if (body[0].getX() + 1 == food.getX() && body[0].getY() == food.getY()) {
+            if (body[0].getX() + 2 == food.getX() && body[0].getY() == food.getY()) {
                 return true;
             }
             return false;
@@ -242,8 +242,7 @@ void centerConsole(void) {
                GetSystemMetrics(SM_CYSCREEN) / 2 - 550 / 2, 800, 550, TRUE); // 800 width, 550 height
 }
 
-void ShowConsoleCursor(bool showFlag)
-{
+void ShowConsoleCursor(bool showFlag) {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
 
@@ -261,7 +260,7 @@ void initConsole(bool cursorFlag) {
 void drawArray(Food& food) {
     for (int i = 0; i < GAME_HEIGHT; i++) {
         for (int j = 0; j < GAME_WIDTH; j++) {
-            if (i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1) {
+            if ( (i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1 ) && (j % 2 == 0) ) {
                 std::cout << "X";
             } else {
                 std::cout << " ";
@@ -280,7 +279,6 @@ void endGame() {
     std::exit(EXIT_FAILURE);
 }
 
-//TODO FIX SPACING
 int main() {
     
     using clock = std::chrono::steady_clock; 
@@ -291,6 +289,7 @@ int main() {
     Snake snake;
     Food food;
     drawArray(food);
+    setCursorPosition(0, 0);
     
     while (!gameOver) {
         next_frame += std::chrono::milliseconds(1000 / 5); // 5Hz 
