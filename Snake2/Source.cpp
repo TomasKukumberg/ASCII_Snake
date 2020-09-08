@@ -64,9 +64,6 @@ public:
     Food() {
         generateNewFood();
     }
-    //Position getPosition(void) {
-      //  return this->position;
-    //}
     int getX() {
         return this->position.getX();
     }
