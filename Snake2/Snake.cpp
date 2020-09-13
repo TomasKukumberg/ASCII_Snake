@@ -1,4 +1,4 @@
-#include "Snake.h"
+#include "snake.h"
 
 Snake::Snake() {
     body.push_front({ GAME_WIDTH / 2, GAME_HEIGHT / 2 });

@@ -3,11 +3,11 @@
 #include <deque>
 #include <conio.h>
 
-#include "Position.h"
-#include "Direction.h"
-#include "Food.h"
-#include "Macros.h"
-#include "Console.h"
+#include "position.h"
+#include "direction.h"
+#include "food.h"
+#include "macros.h"
+#include "console.h"
 
 class Snake {
 private:

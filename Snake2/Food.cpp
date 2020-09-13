@@ -1,4 +1,4 @@
-#include "Food.h"
+#include "food.h"
 #include <cstdlib>
 
 Food::Food() {

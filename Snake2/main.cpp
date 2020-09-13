@@ -1,6 +1,6 @@
 #include <thread>
 
-#include "Snake.h"
+#include "snake.h"
 
 int main() {
     

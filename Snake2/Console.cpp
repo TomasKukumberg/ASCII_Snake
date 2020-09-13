@@ -1,6 +1,6 @@
-#include "Console.h"
+#include "console.h"
 #include <iostream>
-#include <Windows.h>
+#include <windows.h>
 
 void Console::setCursorPosition(int x, int y)
 {
