@@ -275,21 +275,6 @@ public:
     }
 };
 
-void drawArray(Food& food, Console& console) {
-    for (int i = 0; i < GAME_HEIGHT; i++) {
-        for (int j = 0; j < GAME_WIDTH; j++) {
-            if ( (i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1 ) && (j % 2 == 0) ) {
-                std::cout << "X";
-            } else {
-                std::cout << " ";
-            }
-        }
-        std::cout << "\n";
-    }
-    console.setCursorPosition(food.getX(), food.getY());
-    std::cout << "*";
-}
-
 int main() {
     
     using clock = std::chrono::steady_clock; 
