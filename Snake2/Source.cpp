@@ -19,61 +19,103 @@ enum class Direction {
     DOWN
 };
 
-void setCursorPosition(int x, int y)
-{
-    static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    std::cout.flush();
-    COORD coord = { (SHORT)x, (SHORT)y };
-    SetConsoleCursorPosition(hOut, coord);
-}
-
 class Position {
 private:
-    int x;
-    int y;
+	int x;
+	int y;
 public:
-    Position() {
-        this->x = 0;
-        this->y = 0;
-    }
-    Position(int x, int y) {
-        this->x = x;
-        this->y = y;
-    }
-    int getX() {
-        return this->x;
-    }
-    void setX(int x) {
-        this->x = x;
-    }
-    int getY() {
-        return this->y;
-    }
-    void setY(int y) {
-        this->y = y;
-    }
-    bool operator == (const Position& other) const {
-        return this->x == other.x && this->y == other.y;
-    }
+	Position() {
+		this->x = 0;
+		this->y = 0;
+	}
+	Position(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
+	int getX() {
+		return this->x;
+	}
+	void setX(int x) {
+		this->x = x;
+	}
+	int getY() {
+		return this->y;
+	}
+	void setY(int y) {
+		this->y = y;
+	}
+	bool operator == (const Position& other) const {
+		return this->x == other.x && this->y == other.y;
+	}
 };
 
 class Food {
 private:
-    Position position;
+	Position position;
 public:
-    Food() {
-        generateNewFood();
-    }
-    int getX() {
-        return this->position.getX();
-    }
-    int getY() {
-        return this->position.getY();
-    }
-    void generateNewFood() {
-        position.setX(rand() % (GAME_WIDTH/2) * 2);
-        position.setY(rand() % (GAME_HEIGHT - 2) + 1);
-    }
+	Food() {
+		generateNewFood();
+	}
+	int getX() {
+		return this->position.getX();
+	}
+	int getY() {
+		return this->position.getY();
+	}
+	void generateNewFood() {
+		position.setX(rand() % (GAME_WIDTH / 2) * 2);
+		position.setY(rand() % (GAME_HEIGHT - 2) + 1);
+	}
+};
+
+class Console {
+private:
+	const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursorInfo;
+	HWND console = GetConsoleWindow();
+	RECT r;
+public:
+	void setCursorPosition(int x, int y)
+	{
+		std::cout.flush();
+		COORD coord = { (SHORT)x, (SHORT)y };
+		SetConsoleCursorPosition(hOut, coord);
+	}
+	void center(void) {
+		GetWindowRect(console, &r); //stores the console's current dimensions
+		MoveWindow(console, GetSystemMetrics(SM_CXSCREEN) / 2 - 800 / 2,
+			GetSystemMetrics(SM_CYSCREEN) / 2 - 550 / 2, 800, 550, TRUE); // 800 width, 550 height
+	}
+	void endGame() {
+		setCursorPosition(0, GAME_HEIGHT);
+		showCursor(true);
+		std::cout << "GAME OVER!\n";
+		std::exit(EXIT_FAILURE);
+	}
+	void showCursor(bool showFlag) {
+		GetConsoleCursorInfo(hOut, &cursorInfo);
+		cursorInfo.bVisible = showFlag;
+		SetConsoleCursorInfo(hOut, &cursorInfo);
+	}
+	void init(bool cursorFlag) {
+		system("cls");
+		center();
+		showCursor(cursorFlag);
+	}
+	void drawArray(Food& food) {
+		for (int i = 0; i < GAME_HEIGHT; i++) {
+			for (int j = 0; j < GAME_WIDTH; j++) {
+				if ((i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1) && (j % 2 == 0)) {
+					std::cout << "X";
+				} else {
+					std::cout << " ";
+				}
+			}
+			std::cout << "\n";
+		}
+		setCursorPosition(food.getX(), food.getY());
+		std::cout << "*";
+	}
 };
 
 class Snake {
@@ -130,13 +172,13 @@ public:
         if (eatItself(nextMove)) return false;
         return true;
     }
-    void move(Food& food) {
+    void move(Food& food, Console& console) {
         if (!foodNearby(food)) {
-            setCursorPosition(body.back().getX(), body.back().getY());
+            console.setCursorPosition(body.back().getX(), body.back().getY());
             std::cout << "  ";  //delete tail in console
             body.pop_back();    //delete tail data
         } else {
-            setCursorPosition(food.getX(), food.getY());
+            console.setCursorPosition(food.getX(), food.getY());
             switch (direction) {
             case Direction::LEFT:
                 std::cout << "<";
@@ -206,9 +248,9 @@ public:
             return false;
         }
     }
-    void redraw(Food& food) {
+    void redraw(Food& food, Console& console) {
         for (int i = 0; i < body.size(); i++) {
-            setCursorPosition(body[i].getX(), body[i].getY());
+            console.setCursorPosition(body[i].getX(), body[i].getY());
             if (i == 0) {
                 switch (direction) {
                 case Direction::LEFT:
@@ -228,36 +270,12 @@ public:
                 std::cout << "o";
             }
         }
-        setCursorPosition(food.getX(), food.getY());
+        console.setCursorPosition(food.getX(), food.getY());
         std::cout << "*";
     }
 };
 
-void centerConsole(void) {
-    HWND console = GetConsoleWindow();
-    RECT r;
-    GetWindowRect(console, &r); //stores the console's current dimensions
-
-    MoveWindow(console, GetSystemMetrics(SM_CXSCREEN) / 2 - 800 / 2,
-               GetSystemMetrics(SM_CYSCREEN) / 2 - 550 / 2, 800, 550, TRUE); // 800 width, 550 height
-}
-
-void ShowConsoleCursor(bool showFlag) {
-    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO cursorInfo;
-
-    GetConsoleCursorInfo(out, &cursorInfo);
-    cursorInfo.bVisible = showFlag;
-    SetConsoleCursorInfo(out, &cursorInfo);
-}
-
-void initConsole(bool cursorFlag) {
-    system("cls");
-    centerConsole();
-    ShowConsoleCursor(cursorFlag);
-}
-
-void drawArray(Food& food) {
+void drawArray(Food& food, Console& console) {
     for (int i = 0; i < GAME_HEIGHT; i++) {
         for (int j = 0; j < GAME_WIDTH; j++) {
             if ( (i == 0 || i == GAME_HEIGHT - 1 || j == 0 || j == GAME_WIDTH - 1 ) && (j % 2 == 0) ) {
@@ -268,15 +286,8 @@ void drawArray(Food& food) {
         }
         std::cout << "\n";
     }
-    setCursorPosition(food.getX(), food.getY());
+    console.setCursorPosition(food.getX(), food.getY());
     std::cout << "*";
-}
-
-void endGame() {
-    setCursorPosition(0, GAME_HEIGHT);
-    ShowConsoleCursor(true);
-    std::cout << "GAME OVER!\n";
-    std::exit(EXIT_FAILURE);
 }
 
 int main() {
@@ -284,12 +295,13 @@ int main() {
     using clock = std::chrono::steady_clock; 
     auto next_frame = clock::now();
     bool gameOver = false;
+	Console console;
 
-    initConsole(false);
+    console.init(false);
     Snake snake;
     Food food;
-    drawArray(food);
-    setCursorPosition(0, 0);
+    console.drawArray(food);
+    console.setCursorPosition(0, 0);
     
     while (!gameOver) {
         next_frame += std::chrono::milliseconds(1000 / 5); // 5Hz 
@@ -299,10 +311,9 @@ int main() {
         if (snake.canMove() == false) {
             gameOver = true;
         }
-        snake.move(food);
-        snake.redraw(food);
+        snake.move(food, console);
+        snake.redraw(food, console);
         std::this_thread::sleep_until(next_frame);
     }
-    
-    endGame();
+    console.endGame();
 }
