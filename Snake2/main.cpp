@@ -1,13 +1,5 @@
-#include <iostream>
-#include <windows.h>
-#include <conio.h>
-#include <deque>
-#include <chrono>
 #include <thread>
 
-#include "Position.h"
-#include "Food.h"
-#include "Console.h"
 #include "Snake.h"
 
 int main() {
