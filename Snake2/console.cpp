@@ -2,8 +2,7 @@
 #include <iostream>
 #include <windows.h>
 
-void Console::setCursorPosition(int x, int y)
-{
+void Console::setCursorPosition(int x, int y) {
 	std::cout.flush();
 	COORD coord = { (SHORT)x, (SHORT)y };
 	SetConsoleCursorPosition(hOut, coord);
