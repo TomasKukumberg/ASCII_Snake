@@ -1,6 +1,4 @@
 #include "console.h"
-#include <iostream>
-#include <windows.h>
 
 void Console::setCursorPosition(int x, int y) {
 	std::cout.flush();
