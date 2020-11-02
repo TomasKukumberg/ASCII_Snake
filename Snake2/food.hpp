@@ -1,7 +1,7 @@
 #pragma once
 
-#include "position.h"
-#include "macros.h"
+#include "position.hpp"
+#include "macros.hpp"
 
 class Food {
 private:

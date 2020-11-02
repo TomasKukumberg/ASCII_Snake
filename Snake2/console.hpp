@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <iostream>
 
-#include "food.h"
+#include "food.hpp"
 
 class Console {
 private:

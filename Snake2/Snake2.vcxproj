@@ -145,12 +145,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="console.h" />
-    <ClInclude Include="direction.h" />
-    <ClInclude Include="food.h" />
-    <ClInclude Include="macros.h" />
-    <ClInclude Include="position.h" />
-    <ClInclude Include="snake.h" />
+    <ClInclude Include="console.hpp" />
+    <ClInclude Include="direction.hpp" />
+    <ClInclude Include="food.hpp" />
+    <ClInclude Include="macros.hpp" />
+    <ClInclude Include="position.hpp" />
+    <ClInclude Include="snake.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

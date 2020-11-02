@@ -32,22 +32,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="snake.h">
+    <ClInclude Include="console.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="position.h">
+    <ClInclude Include="direction.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="food.h">
+    <ClInclude Include="food.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="console.h">
+    <ClInclude Include="macros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="macros.h">
+    <ClInclude Include="position.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="direction.h">
+    <ClInclude Include="snake.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

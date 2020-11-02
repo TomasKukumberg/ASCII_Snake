@@ -1,4 +1,4 @@
-#include "console.h"
+#include "console.hpp"
 
 void Console::setCursorPosition(int x, int y) {
 	std::cout.flush();
