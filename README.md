@@ -1,5 +1,5 @@
 # Snake
-The famous game Snake made with ASCII graphics and win32API
+The famous game Snake made with C++, ASCII graphics and win32API
 
 IDE: Visual Studio
 
