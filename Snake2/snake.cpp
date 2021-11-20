@@ -19,11 +19,7 @@ std::deque<Position> Snake::getBody() {
 
 bool Snake::eatItself(Position newPosition) {
     auto result = std::find(std::begin(body), std::end(body), newPosition);
-    if (result == std::end(body)) {
-        return false;
-    } else {
-        return true;
-    }
+    return !(result == std::end(body));
 }
 
 bool Snake::crashIntoWalls(Position nextMove) {
